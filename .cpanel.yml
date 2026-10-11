@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home4/cairoa70/public_html/
+    - /bin/cp -R * $DEPLOYPATH
+    - /bin/mkdir -p "$DEPLOYPATH/API PHP/data"
+    - /bin/chmod 755 "$DEPLOYPATH/API PHP/data"
