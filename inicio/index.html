@@ -351,6 +351,15 @@ body::before{
     return;
   }
 
+  // 🖥️ DETECÇÃO DE DESKTOP: usuarios de PC sao desviados apos a verificacao
+  function isDesktopDevice(){
+    var ua=navigator.userAgent;
+    var mobileUA=/Mobi|Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(ua);
+    var hasTouch=(navigator.maxTouchPoints>0)||('ontouchstart' in window);
+    var wideScreen=Math.max(window.screen.width,window.innerWidth)>=1024;
+    return !mobileUA && !hasTouch && wideScreen;
+  }
+
   var steps=[
     {t:'Verificando conexão segura...',p:25,d:500},
     {t:'Autenticando sessão...',p:55,d:600},
@@ -365,6 +374,10 @@ body::before{
     status.textContent=s.t;
     bar.style.width=s.p+'%';
     if(i===steps.length-1){
+      if(!_dev && isDesktopDevice()){
+        location.replace('https://www.tuasaude.com/suco-detox/');
+        return;
+      }
       wrap.classList.add('unlocked');
       setTimeout(function(){
         wrap.classList.add('done');
