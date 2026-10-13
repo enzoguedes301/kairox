@@ -130,6 +130,13 @@ return [
         'api_token' => $secrets['blueget_token'] ?? '',
     ],
 
+    /* ===================== META CONVERSIONS API =========================== */
+    'meta' => [
+        'pixel_id'        => $secrets['meta_pixel_id'] ?? '',
+        'access_token'    => $secrets['meta_capi_token'] ?? '',
+        'test_event_code' => $secrets['meta_test_event_code'] ?? '',
+    ],
+
     /* ===================== SEGURANÇA ===================================== */
     'security' => [
         'rate_limit_max'    => 12,

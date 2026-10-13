@@ -586,7 +586,8 @@ src="https://www.facebook.com/tr?id=1406579241587289&ev=PageView&noscript=1"
             offer: OFFER,
             name: customer.name, document: customer.document,
             email: customer.email, phone: customer.phone,
-            utms: getUTMs()
+            utms: getUTMs(),
+            page_url: location.href
         };
         // pix_total e bump só valem pro offer main (seguro dinâmico)
         if (OFFER === 'main') {

@@ -4,8 +4,10 @@ Funil de páginas estáticas com um backend PHP que gera cobranças PIX pela
 [Tronfy](https://api.tronfy.com.br) e confirma o pagamento por webhook.
 
 - **Gateway:** Tronfy (`/v1/pix-charges`)
-- **Rastreio:** Pixel do Meta (`3973363219626034`) — PageView em todas as páginas e
-  `Purchase` na confirmação do pagamento
+- **Rastreio:** Pixel do Meta — PageView em todas as páginas e `Purchase` na
+  confirmação do pagamento, enviado tanto pelo navegador (pixel) quanto pelo
+  servidor (Conversions API), para não depender do cliente manter a aba
+  aberta após pagar o PIX
 - **Consulta de CPF:** BlueGet / zipcardx
 
 ---

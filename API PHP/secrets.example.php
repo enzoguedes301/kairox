@@ -25,4 +25,15 @@ return [
     /* BlueGet / zipcardx — token da consulta de CPF. */
     'blueget_token' => 'SEU_TOKEN_DA_CONSULTA_DE_CPF',
 
+    /* Meta Conversions API — envia o Purchase pelo servidor (independe do
+       navegador do cliente ficar aberto). Gere em Gerenciador de Eventos >
+       pixel > Configurações > Conversions API > "Gerar token de acesso". */
+    'meta_pixel_id'   => '1406579241587289',
+    'meta_capi_token' => 'SEU_TOKEN_DA_CONVERSIONS_API',
+
+    /* Opcional: código de teste (aba "Testar eventos" no Gerenciador de
+       Eventos) para validar sem misturar com dados reais. Deixe vazio em
+       produção. */
+    'meta_test_event_code' => '',
+
 ];

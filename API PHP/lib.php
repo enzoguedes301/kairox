@@ -278,8 +278,66 @@ function mark_order_paid($payment_code) {
         $order['status']  = 'paid';
         $order['paid_at'] = gmdate('Y-m-d H:i:s');
         order_save($payment_code, $order);
+        meta_capi_send_purchase($order, $payment_code);
     }
     return 'ok';
+}
+
+/* ========== META CONVERSIONS API ==========
+   Envia o Purchase pelo servidor no instante em que o pedido é marcado como
+   pago (webhook ou polling de status) — não depende do navegador do cliente
+   continuar aberto, diferente do pixel no front. */
+
+function meta_hash($v) {
+    $v = trim(mb_strtolower((string)$v));
+    return $v === '' ? null : hash('sha256', $v);
+}
+
+function meta_capi_send_purchase($order, $payment_code) {
+    $m = cfg()['meta'];
+    if ($m['pixel_id'] === '' || $m['access_token'] === '') {
+        error_log('[meta capi] ignorado: faltam meta_pixel_id/meta_capi_token em secrets.php');
+        return;
+    }
+
+    $customer = $order['customer'] ?? [];
+    $utms     = $order['utms'] ?? [];
+    $product  = $order['product'] ?? [];
+
+    $user_data = array_filter([
+        'em'               => meta_hash($customer['email'] ?? ''),
+        'ph'               => meta_hash($customer['phone'] ?? ''),
+        'external_id'      => meta_hash($customer['document'] ?? ''),
+        'client_ip_address'=> $order['ip'] ?? null,
+        'client_user_agent'=> $order['user_agent'] ?? null,
+        'fbp'              => $utms['_fbp'] ?? null,
+        'fbc'              => $utms['_fbc'] ?? null,
+    ]);
+
+    $event = [
+        'event_name'       => 'Purchase',
+        'event_time'       => strtotime(($order['paid_at'] ?? gmdate('Y-m-d H:i:s')) . ' UTC'),
+        'event_id'         => $payment_code,
+        'action_source'    => 'website',
+        'event_source_url' => $order['page_url'] ?? checkout_base_url(),
+        'user_data'        => $user_data,
+        'custom_data'      => [
+            'currency'     => 'BRL',
+            'value'        => round(((int)($product['amount_cents'] ?? 0)) / 100, 2),
+            'content_name' => $product['name'] ?? '',
+            'content_type' => 'product',
+        ],
+    ];
+
+    $body = ['data' => [$event]];
+    if (!empty($m['test_event_code'])) $body['test_event_code'] = $m['test_event_code'];
+
+    $url = 'https://graph.facebook.com/v21.0/' . rawurlencode($m['pixel_id']) . '/events?access_token=' . rawurlencode($m['access_token']);
+    $res = http_json('POST', $url, ['Content-Type: application/json'], $body, 15);
+
+    if ($res['code'] < 200 || $res['code'] >= 300) {
+        error_log('[meta capi] falhou code=' . ($res['code'] ?? '?') . ' body=' . substr((string)($res['raw'] ?? ''), 0, 500));
+    }
 }
 
 function checkout_base_url() {

@@ -161,6 +161,8 @@ switch ($action) {
             'product'        => ['id' => $offer['id'], 'name' => $offer['name'], 'amount_cents' => (int)$offer['amount_cents']],
             'created_at_utc' => gmdate('Y-m-d H:i:s'),
             'ip'             => client_ip(),
+            'user_agent'     => clean_str($_SERVER['HTTP_USER_AGENT'] ?? '', 300),
+            'page_url'       => filter_var($in['page_url'] ?? '', FILTER_VALIDATE_URL) ?: checkout_base_url(),
             'customer'       => ['name' => $name, 'email' => $email, 'document' => $doc, 'phone' => $phone],
             'utms'           => $clean_utms,
             'status'         => 'pending',
